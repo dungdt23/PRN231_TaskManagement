@@ -1,0 +1,200 @@
+﻿@using BusinessObjects.DTOs;
+@using BusinessObjects.Requests;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, LazZiya.TagHelpers
+@{
+    Layout = "_LayoutLeader";
+    List<TaskAssignDTO> taskAssigns = ViewData["taskAssigns"] as List<TaskAssignDTO>;
+    List<UserTeamDTO> userTeams = ViewData["users"] as List<UserTeamDTO>;
+    int? taskId = ViewData["taskId"] as int?;
+}
+<!-- CREATE BUTTON -->
+<button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#createGradeModal">
+    Assign Task
+</button>
+<!--RESPONSE-->
+@if (TempData.ContainsKey("messageResponse"))
+{
+    <div class="form-group">
+        <p class="text-danger">@TempData["messageResponse"]</p>
+    </div>
+}
+<!-- MODAL CREATE -->
+<div class="modal fade" id="createGradeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Task" asp-action="AssignTask">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Assign Task</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" value=@taskId name="taskId" />
+                    <p>User</p>
+                    <select name="user">
+                        @foreach (var item in userTeams)
+                        {
+                            <option value="@item.User.UserId">@item.User.Username - @item.User.Firstname @item.User.Middlename @item.User.Lastname</option>
+                        }
+                    </select>
+                    <br />
+                    <p>Description</p>
+                    <input type="text" name="des" class="w-100" />
+                    <p>Start Date</p>
+                    <input type="datetime-local"
+                           class="form-control"
+                           name="startDate">
+                    <p>Due Date</p>
+                    <input type="datetime-local"
+                           class="form-control"
+                           name="dueDate">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--LIST OBJECT-->
+<table id="table" class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+        <tr>
+            <th>Task Name</th>
+            <th>User Name</th>
+            <th>Description</th>
+            <th>Assign Date</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th></th>
+            <th></th>
+
+        </tr>
+    </thead>
+    @foreach (var item in taskAssigns)
+    {
+        <tr>
+            <td>@item.Task.Taskname</td>
+            <td>@item.User.Firstname @item.User.Middlename @item.User.Lastname</td>
+            <td>@item.Des</td>
+            <td>@item.AssignDate</td>
+            <td>@item.StartDate</td>
+            <td>@item.EndDate</td>
+            @if (item.Status == true)
+            {
+                <td style="color: forestgreen">Done</td>
+
+            }
+            else
+            {
+                <td style="color: darkred">Not yet</td>
+            }
+            <td>
+                <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopup('@item.User.UserId','@item.Des','@item.StartDate','@item.EndDate','@item.TaskAssignId')">
+                    Update
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopupDelete('@item.TaskAssignId')">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+</table>
+<!-- MODAL DELETE -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Task" asp-action="DeleteTaskAssign">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Remove Assign</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="closePopup('deleteModal')"></button>
+                </div>
+                <div class="modal-body">
+                    <input name="taskId" value=@taskId type="hidden"/>
+                    <input id="taskAssignId" type="hidden" name="taskAssignId" />
+                    <p> Do you want remove this task assign ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePopup('deleteModal')">Cancle</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL UPDATE-->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Task" asp-action="UpdateTaskAssign">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Assign Task</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" value=@taskId name="taskId" />
+                    <p>User</p>
+                    <select id="user-update" name="user">
+                        @foreach (var item in userTeams)
+                        {
+                            <option value="@item.User.UserId">@item.User.Username - @item.User.Firstname @item.User.Middlename @item.User.Lastname</option>
+                        }
+                    </select>
+                    <br />
+                    <p>Description</p>
+                    <input id="des-update" type="text" name="des" class="w-100" />
+                    <p>Start Date</p>
+                    <input id="startDate-update" type="datetime-local"
+                           class="form-control"
+                           name="startDate">
+                    <p>Due Date</p>
+                    <input id="dueDate-update" type="datetime-local"
+                           class="form-control"
+                           name="dueDate">
+                    <input type="hidden" id="update-taskAssignId" name="taskAssignId" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+    function openPopup(userId, des, startDate, dueDate, taskAssignId) {
+        var _userId = document.getElementById("user-update");
+        _userId.value = userId;
+
+        var _des = document.getElementById("des-update");
+        _des.value = des;
+
+        var _startDate = document.getElementById("startDate-update");
+        _startDate.value = startDate;
+
+        var _dueDate = document.getElementById("dueDate-update");
+        _dueDate.value = dueDate;
+
+        var id = document.getElementById("update-taskAssignId");
+        id.value = taskAssignId;
+        $('#updateModal').modal('show');
+    }
+
+    function openPopupDelete(id) {
+        var inputId = document.getElementById("taskAssignId");
+        inputId.value = id;
+        $('#deleteModal').modal('show');
+    }
+    function closePopup(modalID) {
+        $('#' + modalID).modal('hide');
+    }
+</script>
+
+
+
+

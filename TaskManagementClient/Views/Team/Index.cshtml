@@ -1,0 +1,199 @@
+﻿@using BusinessObjects.DTOs;
+@using BusinessObjects.Requests;
+@{
+    Layout = "_LayoutAdmin";
+}
+@{
+    List<TeamDTO> teams = ViewData["teams"] as List<TeamDTO>;
+    List<ProjectDTO> projects = ViewData["projects"] as List<ProjectDTO>;
+    string role = ViewData["role"] as string;
+}
+@{
+    if (role == "Admin")
+    {
+        Layout = "_LayoutAdmin";
+    }
+    else
+    {
+        if (role == "Leader")
+        {
+            Layout = "_LayoutLeader";
+
+        }
+    }
+}
+@if (role.Equals("Admin"))
+{
+    <!-- CREATE BUTTON -->
+    <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#createGradeModal">
+        Create new team
+    </button>
+}
+<!--RESPONSE-->
+@if (TempData.ContainsKey("messageResponse"))
+{
+    <div class="form-group">
+        <p class="text-danger">@TempData["messageResponse"]</p>
+    </div>
+}
+@if (role.Equals("Admin"))
+{
+    <!-- MODAL CREATE -->
+    <div class="modal fade" id="createGradeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="Create">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create Team</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Team Name</p>
+                        <input type="text" name="name" class="form-control" style="margin-bottom: 10px;" />
+                        <br />
+                        <p>Description</p>
+                        <input type="text" name="des" class="form-control" style="margin-bottom: 10px;" />
+                        <br />
+                        <p>Project</p>
+                        <select name="projectId">
+                            @foreach (var item in projects)
+                            {
+                                <option value="@item.ProjectId">@item.Projectname</option>
+                            }
+                        </select>
+                        <br />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<!--LIST OBJECT-->
+<table id="table" class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+        <tr>
+            <th>Team Name</th>
+            <th>Description</th>
+            <th>Project</th>
+            @if (role.Equals("Admin"))
+            {
+                <th></th>
+                <th></th>
+            }
+
+        </tr>
+    </thead>
+    @foreach (var item in teams)
+    {
+        <tr>
+            <td><a href="/team/detail?teamId=@item.TeamId">@item.Teamname</a></td>
+            <td>@item.Des</td>
+            <td>@item.Project.Projectname</td>
+            @if (role.Equals("Admin"))
+            {
+                <td>
+                    <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopup('@item.Teamname','@item.Des','@item.ProjectId'
+                    ,'@item.TeamId')">
+                        Update
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopupDelete('@item.TeamId')">
+                        Delete
+                    </button>
+                </td>
+            }
+
+        </tr>
+    }
+</table>
+@if (role.Equals("Admin"))
+{
+    <!-- MODAL DELETE -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="Delete">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Team</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="closePopup('deleteModal')"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="deleteId" type="hidden" name="teamId" />
+                        <p> Do you want delete this team ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closePopup('deleteModal')">Cancle</button>
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL UPDATE-->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="Update">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Update Team</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Team Name</p>
+                        <input id="update-name" type="text" name="name" class="w-100" />
+                        <br />
+                        <p>Description</p>
+                        <input id="update-des" type="text" name="des" class="w-100" />
+                        <br />
+                        <p>Project</p>
+                        <select id="update-projectId" name="projectId">
+                            @foreach (var item in projects)
+                            {
+                                <option value="@item.ProjectId">@item.Projectname</option>
+                            }
+                        </select>
+                        <br />
+                        <input id="update-teamId" name="teamId" type="hidden" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<script>
+
+    function openPopup(name, des, projectId, teamId) {
+        var _name = document.getElementById("update-name");
+        _name.value = name;
+
+        var _des = document.getElementById("update-des");
+        _des.value = des;
+
+        var _projectId = document.getElementById("update-projectId");
+        _projectId.value = projectId;
+
+        var id = document.getElementById("update-teamId");
+        id.value = teamId;
+        $('#updateModal').modal('show');
+    }
+
+    function openPopupDelete(id) {
+        var inputId = document.getElementById("deleteId");
+        inputId.value = id;
+        $('#deleteModal').modal('show');
+    }
+    function closePopup(modalID) {
+        $('#' + modalID).modal('hide');
+    }
+</script>

@@ -1,0 +1,224 @@
+﻿@using BusinessObjects.DTOs;
+@using BusinessObjects.Requests;
+@{
+    List<UserTeamDTO> userteams = ViewData["userteams"] as List<UserTeamDTO>;
+    int? teamId = ViewData["teamId"] as int?;
+    string role = ViewData["role"] as string;
+}
+@{
+    if (role == "Admin")
+    {
+        Layout = "_LayoutAdmin";
+    }
+    else
+    {
+        if (role == "Leader")
+        {
+            Layout = "_LayoutLeader";
+
+        }
+    }
+}
+@if (role.Equals("Admin"))
+{
+    <h2>Members of Team</h2>
+    <!-- CREATE BUTTON -->
+    <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#createGradeModal">
+        Add new member to team
+    </button>
+}
+
+<!--RESPONSE-->
+@if (TempData.ContainsKey("messageResponse"))
+{
+    <div class="form-group">
+        <p class="text-danger">@TempData["messageResponse"]</p>
+    </div>
+}
+@if (role.Equals("Admin"))
+{
+    <!-- MODAL CREATE -->
+    <div class="modal fade" id="createGradeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="AddMemberToTeam">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add new member</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Email of member</p>
+                        <input type="text" name="email" class="form-control" style="margin-bottom: 10px;" />
+                        <br />
+                        <input type="hidden" name="teamId" value="@teamId" class="form-control" style="margin-bottom: 10px;" />
+                        <p>Role</p>
+                        <select name="role">
+                            <option value="Project Manager">Project Manager</option>
+                            <option value="Backend Developer">Backend Developer</option>
+                            <option value="Business Analysis">Business Analysis</option>
+                            <option value="Frontend Developer">Frontend Developer</option>
+                            <option value="DevOp">DevOp</option>
+                        </select>
+                        <br />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add to the team</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+<!--LIST OBJECT-->
+<table id="table" class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+        <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Age</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th></th>
+            @if (role.Equals("Admin"))
+            {
+                <th></th>
+            }
+        </tr>
+    </thead>
+    @foreach (var item in userteams)
+    {
+        <tr>
+            <td>@item.User.Username</td>
+            <td>@item.User.Lastname @item.User.Middlename @item.User.Firstname</td>
+            <td>@item.User.Age</td>
+            <td>@item.User.Address</td>
+            <td>@item.User.Email</td>
+            <td>@item.Role</td>
+            @if (role.Equals("Admin"))
+            {
+                @if (item.IsLeader == true)
+                {
+                    <td>
+                        <button type="button" class="btn btn-link btn-sm btn-rounded" style="color: red ">
+                            LEADER
+                        </button>
+                    </td>
+
+                }
+                else
+                {
+                    <td>
+                        <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopupLeader('@item.UserTeamId','@item.TeamId')">
+                            Set as leader of team
+                        </button>
+                    </td>
+                }
+                <td>
+                    <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopupDelete('@item.UserTeamId')">
+                        Remove from team
+                    </button>
+                </td>
+            }
+            else
+            {
+                @if (item.IsLeader == true)
+                {
+                    <td>
+                        <button type="button" class="btn btn-link btn-sm btn-rounded" style="color: red ">
+                            LEADER
+                        </button>
+                    </td>
+
+                }
+                <td>
+                </td>
+            }
+
+        </tr>
+    }
+</table>
+@if (role.Equals("Admin"))
+{
+    <!-- MODAL DELETE -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="RemoveMemberFromTeam">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Remove</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="closePopup('deleteModal')"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="teamId" value="@teamId" class="form-control" style="margin-bottom: 10px;" />
+                        <input id="deleteId" type="hidden" name="userTeamId" />
+                        <p> Do you want remove this member from team ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closePopup('deleteModal')">Cancle</button>
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL SET LEADER -->
+    <div class="modal fade" id="leaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Team" asp-action="SetTeamLeader">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="closePopup('leaderModal')"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="teamId" value="@teamId" class="form-control" style="margin-bottom: 10px;" />
+                        <input id="leaderId" type="hidden" name="userTeamId" />
+                        <input id="teamId" type="hidden" name="teamId" />
+
+                        <p> Do you want to set this member as new leader of team ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closePopup('leaderModal')">Cancle</button>
+                        <button type="submit" class="btn btn-primary">Set new leader</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<script>
+
+    function openPopup(name, des, projectId, teamId) {
+        var _name = document.getElementById("update-name");
+        _name.value = name;
+
+        var _des = document.getElementById("update-des");
+        _des.value = des;
+
+        var _projectId = document.getElementById("update-projectId");
+        _projectId.value = projectId;
+
+        var id = document.getElementById("update-teamId");
+        id.value = teamId;
+        $('#updateModal').modal('show');
+    }
+
+    function openPopupDelete(id) {
+        var inputId = document.getElementById("deleteId");
+        inputId.value = id;
+        $('#deleteModal').modal('show');
+    }
+    function openPopupLeader(id, teamId) {
+        var inputId = document.getElementById("leaderId");
+        inputId.value = id;
+        var _teamId = document.getElementById("teamId");
+        _teamId.value = teamId;
+        $('#leaderModal').modal('show');
+    }
+    function closePopup(modalID) {
+        $('#' + modalID).modal('hide');
+    }
+</script>

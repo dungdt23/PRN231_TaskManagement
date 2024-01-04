@@ -1,0 +1,99 @@
+﻿@using BusinessObjects.DTOs;
+@using BusinessObjects.Requests;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, LazZiya.TagHelpers
+@{
+    Layout = "_LayoutLeader";
+}
+@{
+    List<TaskDTO> tasks = ViewData["tasks"] as List<TaskDTO>;
+    List<TeamDTO> teams = ViewData["teams"] as List<TeamDTO>;
+    List<CategoryDTO> cates = ViewData["cates"] as List<CategoryDTO>;
+    string role = ViewData["role"] as string;
+    int? teamIdFiltered = ViewData["teamIdFiltered"] as int?;
+    int? categoryIdFiltered = ViewData["categoryIdFiltered"] as int?;
+    string taskNameFiltered = ViewData["taskNameFiltered"] as string;
+    int? total = ViewData["total"] as int?;
+    int? pageIndex = ViewData["pageIndex"] as int?;
+    int? pageSize = ViewData["pageSize"] as int?;
+
+}
+<form class="row g-3">
+
+    <div class="col-auto">
+        <label for="taskName" class="visually-hidden">Task Name</label>
+        <input type="text" class="form-control" id="taskName" name="taskName" value=@taskNameFiltered>
+    </div>
+
+    <div class="col-auto">
+        <label for="team" class="visually-hidden">Team</label>
+        <select class="form-select" id="team" name="teamId">
+            <option value="0" selected>All</option>
+            @foreach (var item in teams)
+            {
+                @if (item.TeamId == teamIdFiltered)
+                {
+                    <option value="@item.TeamId" selected>@item.Teamname</option>
+                }
+                else
+                {
+                    <option value="@item.TeamId">@item.Teamname</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-auto">
+        <label for="cate" class="visually-hidden">Category</label>
+        <select class="form-select" id="cate" name="categoryId">
+            <option value="0" selected>All</option>
+            @foreach (var item in cates)
+            {
+                @if (item.CategoryId == categoryIdFiltered)
+                {
+                    <option value="@item.CategoryId" selected>@item.Categoryname</option>
+                }
+                else
+                {
+                    <option value="@item.CategoryId">@item.Categoryname</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+
+</form>
+<!--LIST OBJECT-->
+<table id="table" class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+        <tr>
+            <th>Task ID</th>
+            <th>Task Name</th>
+            <th>Category</th>
+            <th>Team</th>
+            <th>Description</th>
+            <th>Process</th>
+            <th></th>
+
+        </tr>
+    </thead>
+    @foreach (var item in tasks)
+    {
+        <tr>
+            <td>@item.TaskId</td>
+            <td><a href="">@item.Taskname</a></td>
+            <td>@item.Category.Categoryname</td>
+            <td>@item.Team.Teamname</td>
+            <td>@item.Des</td>
+            <td>@item.Status</td>
+            <td>
+                <a href="/task/detail?taskId=@item.TaskId">Check Details</a>
+            </td>
+        </tr>
+    }
+</table>
+<paging class="pagination" total-records="@total.Value" show-total-pages="false" show-total-records="false" page-size="@pageSize.Value" page-no="@pageIndex.Value" show-page-size-nav="false">
+</paging>

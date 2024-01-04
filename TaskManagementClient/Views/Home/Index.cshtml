@@ -1,0 +1,109 @@
+﻿@{
+    string role = ViewData["role"] as string;
+}
+@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    if (role == "Admin")
+    {
+        Layout = "_LayoutAdmin";
+    }
+    else
+    {
+        if (role == "Leader")
+        {
+            Layout = "_LayoutLeader";
+
+        }
+    }
+}
+@*<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management</title>*@
+<style>
+    body {
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .container {
+        margin-top: 100px;
+    }
+
+    .jumbotron {
+        background-color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        padding: 50px;
+    }
+
+        .jumbotron h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .jumbotron p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+</style>
+@*</head>*@
+
+<body>
+
+    <div class="background-image"></div>
+
+    <div class="container">
+
+@*        <div class="logo">
+            <i class="fa fa-tasks"></i>
+            <h1>TaskWizard</h1>
+        </div>*@
+@*
+        <div class="jumbotron">
+            <p>Welcome to the Task Management system!</p>
+            <p>Manage your tasks efficiently and stay organized.</p>
+
+            <a href="#" class="btn btn-primary">Get Started</a>
+        </div>*@
+
+    </div>
+
+</body>
+<style>
+    body {
+  height: 100vh;
+}
+
+.background-image {
+        background-image: url(https://friday.app/_next/image?url=https%3A%2F%2Fimages.prismic.io%2Ffriday-marketing%2F7efcf9c8-6916-452c-860c-d829faed612c_LOGOBest%2BDaily%2BChecklist%2BApps-01.png%3Fauto%3Dcompress%2Cformat&w=3840&q=75);
+        height: 100vh;
+  background-size: cover;
+  etc...
+}
+
+/*.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+}
+
+.logo {
+  color: white;
+  etc...
+}
+
+.jumbotron {
+  background: linear-gradient(to bottom, transparent, #000);
+  color: white;
+  etc...  
+}
+
+media(max-width: 768px) {
+  /* responsive CSS */
+}*/
+</style>
+
+

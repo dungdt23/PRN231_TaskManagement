@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "_LayoutLogin";
+}
+<!-- Section: Design Block -->
+<section class="background-radial-gradient overflow-hidden">
+    <style>
+        .background-radial-gradient {
+            background-color: hsl(218, 41%, 15%);
+            background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+        }
+
+        #radius-shape-1 {
+            height: 220px;
+            width: 220px;
+            top: -60px;
+            left: -130px;
+            background: radial-gradient(#44006b, #ad1fff);
+            overflow: hidden;
+        }
+
+        #radius-shape-2 {
+            border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+            bottom: -60px;
+            right: -110px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(#44006b, #ad1fff);
+            overflow: hidden;
+        }
+
+        .bg-glass {
+            background-color: hsla(0, 0%, 100%, 0.9) !important;
+            backdrop-filter: saturate(200%) blur(25px);
+        }
+    </style>
+
+    <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+        <div class="row gx-lg-5 align-items-center mb-5">
+            <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+                <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                    Welcome to <br />
+                    <span style="color: hsl(218, 81%, 75%)">TASK WIZARD</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                </p>
+            </div>
+
+            <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+                <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+                <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+                <div class="card bg-glass">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <form method="post" asp-controller="Login" asp-action="Login">
+                            <!-- Email input -->
+                            <div class="form-outline mb-4">
+                                <input type="text" id="form3Example3" class="form-control" name="username" />
+                                <label class="form-label" for="form3Example3">Username</label>
+                            </div>
+
+                            <!-- Password input -->
+                            <div class="form-outline mb-4">
+                                <input type="password" id="form3Example4" class="form-control" name="password"/>
+                                <label class="form-label" for="form3Example4">Password</label>
+                            </div>
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-primary">
+                                Login
+                            </button>
+
+                            <!-- Submit button -->
+                            <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#createGradeModal">
+                                Register
+                            </button>
+
+                        </form>
+                    </div>
+                    <!--RESPONSE-->
+                    @if (TempData.ContainsKey("messageResponse"))
+                    {
+                        <div class="form-group">
+                            <p class="text-danger">@TempData["messageResponse"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- REGISTER CREATE -->
+    <div class="modal fade" id="createGradeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" asp-controller="Member" asp-action="Create">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Register</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Username</p>
+                        <input type="text" name="username" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Password</p>
+                        <input type="password" name="password" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>First Name</p>
+                        <input type="text" name="firstname" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Last Name</p>
+                        <input type="password" name="lastname" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Middle Name</p>
+                        <input type="text" name="midldename" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Age</p>
+                        <input type="number" name="age" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Address</p>
+                        <input type="text" name="address" id="form3Example4" class="form-control" />
+                        <br />
+                        <p>Email</p>
+                        <input type="email" name="email" id="form3Example4" class="form-control" />
+                        <br />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Section: Design Block -->
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+
+

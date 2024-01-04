@@ -1,0 +1,206 @@
+﻿@using BusinessObjects.DTOs;
+@using BusinessObjects.Requests;
+@{
+    Layout = "_LayoutAdmin";
+}
+@{
+    List<MemberDTO> members = ViewData["members"] as List<MemberDTO>;
+}
+<!-- CREATE BUTTON -->
+<button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#createGradeModal">
+    Create new member
+</button>
+<!--RESPONSE-->
+@if (TempData.ContainsKey("messageResponse"))
+{
+    <div class="form-group">
+        <p class="text-danger">@TempData["messageResponse"]</p>
+    </div>
+}
+<!-- MODAL CREATE -->
+<div class="modal fade" id="createGradeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Member" asp-action="Create">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Project</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Username</p>
+                    <input type="text" name="username" class="w-100"/>
+                    <br/>
+                    <p>Password</p>
+                    <input type="text" name="password" class="w-100"/>
+                    <br/>
+                    <p>First name</p>
+                    <input type="text" name="firstname" class="w-100"/>
+                    <br/>
+                    <p>Middle name</p>
+                    <input type="text" name="middlename" class="w-100"/>
+                    <br/>
+                    <p>Last name</p>
+                    <input type="text" name="lastname" class="w-100"/>
+                    <br/>
+                    <p>Age</p>
+                    <input type="text" name="age" class="w-100"/>
+                    <br/>
+                    <p>Address</p>
+                    <input type="text" name="address" class="w-100"/>
+                    <br/>
+                    <p>Email</p>
+                    <input type="text" name="email" class="w-100"/>
+                    <br/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL DELETE -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Member" asp-action="Delete">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Project</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" onclick="closePopup('deleteModal')"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="deleteId" type="hidden" name="userId"/>
+                    <p> Do you want delete this member ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePopup('deleteModal')">Cancle</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL UPDATE-->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-controller="Member" asp-action="Update">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Project</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Username</p>
+                    <input id="update-username" type="text" name="username" class="w-100"/>
+                    <br/>
+                    <p>Password</p>
+                    <input id="update-password" type="text" name="password" class="w-100"/>
+                    <br/>
+                    <p>First name</p>
+                    <input id="update-firstname" type="text" name="firstname" class="w-100"/>
+                    <br/>
+                    <p>Middle name</p>
+                    <input id="update-middlename" type="text" name="middlename" class="w-100"/>
+                    <br/>
+                    <p>Last name</p>
+                    <input id="update-lastname" type="text" name="lastname" class="w-100"/>
+                    <br/>
+                    <p>Age</p>
+                    <input id="update-age" type="text" name="age" class="w-100"/>
+                    <br/>
+                    <p>Address</p>
+                    <input id="update-address" type="text" name="address" class="w-100"/>
+                    <br/>
+                    <p>Email</p>
+                    <input id="update-email" type="text" name="email" class="w-100"/>
+                    <br/>
+                    <input id="update-userId" name="userId" type="hidden"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--LIST OBJECT-->
+<table id="table" class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+    <tr>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>Full name</th>
+        <th>Age</th>
+        <th>Address</th>
+        <th>Email</th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    @foreach (var item in members)
+    {
+        <tr>
+            <td>@item.UserId</td>
+            <td>
+                <a href="">@item.Username</a>
+            </td>
+            <td>@item.Lastname @item.Middlename @item.Firstname</td>
+            <td>@item.Age</td>
+            <td>@item.Address</td>
+            <td>@item.Email</td>
+            <td>
+                <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopup('@item.Username','@item.Password','@item.Firstname','@item.Middlename','@item.Lastname','@item.Age','@item.Address','@item.Email','@item.UserId')">
+                    Update
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-link btn-sm btn-rounded" onclick="openPopupDelete('@item.UserId')">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+</table>
+<script>
+
+    function openPopup(username,password,firstname,middlename,lastname,age,address,email,userId) {
+        var _username = document.getElementById("update-username");
+        _username.value = username;
+
+        var _password = document.getElementById("update-password");
+        _password.value = password;
+
+        var _firstname = document.getElementById("update-firstname");
+        _firstname.value = firstname;
+
+        var _middlename = document.getElementById("update-middlename");
+        _middlename.value = middlename;
+
+        var _lastname = document.getElementById("update-lastname");
+        _lastname.value = lastname;
+
+        var _age = document.getElementById("update-age");
+        _age.value = age;
+
+        var _address = document.getElementById("update-address");
+        _address.value = address;
+
+        var _email = document.getElementById("update-email");
+        _email.value = email;
+
+        var id = document.getElementById("update-userId");
+        id.value = userId;
+        $('#updateModal').modal('show');
+    }
+
+    function openPopupDelete(id) {
+        var inputId = document.getElementById("deleteId");
+        inputId.value = id;
+        $('#deleteModal').modal('show');
+    }
+    function closePopup(modalID) {
+        $('#' + modalID).modal('hide');
+    }
+</script>
